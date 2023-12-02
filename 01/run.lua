@@ -27,9 +27,9 @@ local function total_for_line(line)
     return total_by_line
 end
 
-local function run()
+local function run(input_file)
 
-    local file_content = read_file("input.txt")
+    local file_content = read_file(input_file)
     local all_lines = split_by_lines(file_content)
 
     local total = 0
@@ -38,6 +38,9 @@ local function run()
     end
 
     print("total", total)
+    return total
 end
 
-run()
+run("input.txt")
+
+return run
