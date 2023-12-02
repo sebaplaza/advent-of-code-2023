@@ -1,5 +1,5 @@
 # How to run ?
 
 ```sh
-lua run.lua
+lua 01.lua
 ```
