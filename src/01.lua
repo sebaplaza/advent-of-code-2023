@@ -38,6 +38,6 @@ local function run(input_file)
     return total
 end
 
-run("resources/input.txt")
+run("resources/01/input.txt")
 
 return run
