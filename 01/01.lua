@@ -1,12 +1,17 @@
 local utils = require("common.utils")
+local lrex = require("rex_pcre")
 
 local function total_for_line(line)
-    local pattern = "%d"
-    local first_number = string.match(line, pattern)
-    local reversed_line = string.reverse(line)
-    local last_number = string.match(reversed_line, pattern)
+    local pattern = "\\d|one|two|three|four|five|six|seven|eight|nine"
 
-    local total_by_line = tonumber(first_number .. last_number)
+    local first_number = lrex.match(line, pattern)
+
+    local last_number = nil
+    for match in lrex.gmatch(line, pattern) do
+        last_number = match
+    end
+    local concatenated = utils.convert_to_number(first_number) .. utils.convert_to_number(last_number)
+    local total_by_line = tonumber(concatenated)
     return total_by_line
 end
 
@@ -24,6 +29,6 @@ local function run(input_file)
     return total
 end
 
-run("resources/input.txt")
+-- run("resources/input.txt")
 
 return run
