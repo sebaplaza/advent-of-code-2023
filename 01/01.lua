@@ -2,14 +2,23 @@ local utils = require("common.utils")
 local lrex = require("rex_pcre")
 
 local function total_for_line(line)
-    local pattern = "\\d|one|two|three|four|five|six|seven|eight|nine"
-
-    local first_number = lrex.match(line, pattern)
-
+    local pattern = "(\\d|one|two|three|four|five|six|seven|eight|nine)"
+    local last_index, _, first_number = lrex.find(line, pattern)
     local last_number = nil
-    for match in lrex.gmatch(line, pattern) do
-        last_number = match
+
+    repeat
+        -- why this? because we have to avoid should work for overlapped patterns
+        last_index, _, match = lrex.find(line, pattern, last_index + 1);
+        if match then
+            last_number = match
+        end
+    until match == nil
+
+    if last_number == nil then
+        -- if have no number at the end, we need to search from the last last_index
+        last_index, _, last_number = lrex.find(line, pattern, last_index);
     end
+
     local concatenated = utils.convert_to_number(first_number) .. utils.convert_to_number(last_number)
     local total_by_line = tonumber(concatenated)
     return total_by_line
@@ -29,6 +38,6 @@ local function run(input_file)
     return total
 end
 
--- run("resources/input.txt")
+run("resources/input.txt")
 
 return run
