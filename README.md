@@ -5,6 +5,7 @@
 ```sh
 luarocks install lrexlib-PCRE
 luarocks install busted
+luarocks install inspect
 ```
 
 ```sh

@@ -9,7 +9,6 @@ local function is_numeric(x)
     return false
 end
 
-
 local function extract_items_by_line(line, line_number, file_items)
     local pattern = "(\\d+|[^.0-9])"
 
@@ -41,26 +40,34 @@ local function extract_items_by_line(line, line_number, file_items)
     until match == nil
 end
 
-local function number_is_adyacent_to_symbol(number, file_items)
-    local result = false
-    for _, symbol in pairs(file_items) do
-        if symbol.type == 'symbol' then
-            local adyacent_line = math.abs(number.line_number - symbol.line_number) <= 1
+local function are_adjacent(symbol, number)
+    local adjacent_line = math.abs(number.line_number - symbol.line_number) <= 1
 
-            local around = adyacent_line and number.index_start - 1 <= symbol.index_end and
-                symbol.index_end <= number.index_end + 1
+    local around = adjacent_line and number.index_start - 1 <= symbol.index_end and
+        symbol.index_end <= number.index_end + 1
 
-            -- print('around', around, number.value, symbol.line_number, symbol.value)
+    return adjacent_line and around
+end
 
-            if adyacent_line and around then
-                -- print('is adyacent !', number.value, symbol.value)
-                result = true
-                break;
+
+local function calculate_gear_ratio(gear, file_items)
+    local total = 1
+    local total_numbers = 0
+    for _, number in pairs(file_items) do
+        if number.type == 'number' then
+            if are_adjacent(gear, number) then
+                total_numbers = total_numbers + 1;
+                total = total * number.value
             end
         end
     end
-    return result
+    if total_numbers > 1 then
+        return total
+    else
+        return 0
+    end
 end
+
 
 
 local function generate_sum(input_file)
@@ -76,10 +83,9 @@ local function generate_sum(input_file)
     end
 
     for _, item in pairs(file_items) do
-        if item.type == 'number' then
-            if number_is_adyacent_to_symbol(item, file_items) then
-                total = total + tonumber(item.value)
-            end
+        if item.type == 'symbol' and item.value == "*" then
+            local gear_ratio = calculate_gear_ratio(item, file_items)
+            total = total + gear_ratio
         end
     end
 
